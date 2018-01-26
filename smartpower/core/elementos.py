@@ -116,6 +116,6 @@ class Terminal(object):
         if self.no != None:
             self.no.backup_list = self.no.terminal_list
             self.no.terminal_list.remove(self)
-            print "remova!"
+            print("remova!")
             if len(self.no.terminal_list) < 2:
                 self.parent.scene().lista_no_conectivo.remove(self.no)

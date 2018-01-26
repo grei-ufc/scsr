@@ -7,15 +7,15 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui
 import sys
-from Cadastro import CadastroDialog
+from smartpower.gui.dialogs.Cadastro import CadastroDialog
 
-class TCTPDialog(QtGui.QWidget):
+class TCTPDialog(QtWidgets.QWidget):
 
     def __init__(self, item):
         super(RecloserDialog, self).__init__()
-        self.dialog = QtGui.QDialog(self)
+        self.dialog = QtWidgets.QDialog(self)
         self.item = item
         self.scene = self.item.scene()
         self.setupUi(self.dialog)
@@ -27,15 +27,15 @@ class TCTPDialog(QtGui.QWidget):
         sc = 10.0
         Dialog.resize(380, 40+33*sc)
         #Define o tamanho da caixa dialogo
-        self.buttonBox = QtGui.QDialogButtonBox(Dialog)
+        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(0, 33*sc, 341, 32))
         #Define o tamanho do layout dos botões do dialogo
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.cadastro = QtGui.QPushButton('Cadastrar Novo')
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         #print self.buttonBox.buttons
-        self.formLayoutWidget = QtGui.QWidget(Dialog)
+        self.formLayoutWidget = QtWidgets.QWidget(Dialog)
         self.formLayoutWidget.setGeometry(QtCore.QRect(10, 10, 350, 33*sc))
         #Define a localização do layout das propriedades (coordenada x do ponto, coordenada y do ponto, dimensão em x, dimensão em y)
         self.layout = QtGui.QVBoxLayout()
@@ -45,7 +45,7 @@ class TCTPDialog(QtGui.QWidget):
         self.sublayout4 = QtGui.QHBoxLayout()
 
         # Definição da COMBOBOX
-        self.testeLabel = QtGui.QLabel(self.formLayoutWidget)
+        self.testeLabel = QtWidgets.QLabel(self.formLayoutWidget)
         self.testeLabel.setObjectName("testeLabel")
         self.formLayout.setWidget(10, QtGui.QFormLayout.LabelRole, self.testeLabel)
         self.testeLineEdit = QtGui.QComboBox(self.formLayoutWidget)
@@ -61,20 +61,20 @@ class TCTPDialog(QtGui.QWidget):
 
 
         #definição da propriedade RTC
-        self.RTCLabel = QtGui.QLabel(self.formLayoutWidget)
+        self.RTCLabel = QtWidgets.QLabel(self.formLayoutWidget)
         self.RTCLabel.setObjectName("identificaOLabel")
         self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.identificaOLabel)
-        self.RTCLineEdit = QtGui.QLineEdit(self.formLayoutWidget)
+        self.RTCLineEdit = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.RTCLineEdit.setObjectName("RTCLineEdit")
         self.RTCLineEdit.setPlaceholderText(self.item.text.toPlainText())
         self.formLayout.setWidget(0, QtGui.QFormLayout.FieldRole, self.RTCLineEdit)
         self.RTCLineEdit.textChanged.connect(self.en_dis_button)
 
         #definição da propriedade RTP
-        self.RTPLabel = QtGui.QLabel(self.formLayoutWidget)
+        self.RTPLabel = QtWidgets.QLabel(self.formLayoutWidget)
         self.RTPLabel.setObjectName("RTPLabel")
         self.formLayout.setWidget(1, QtGui.QFormLayout.LabelRole, self.RTPLabel)
-        self.RTPLineEdit = QtGui.QLineEdit(self.formLayoutWidget)
+        self.RTPLineEdit = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.RTPLineEdit.setObjectName("RTPLineEdit")
         self.RTPLineEdit.setText(str(self.item.chave.ratedCurrent))
         self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.RTPLineEdit)
@@ -98,7 +98,7 @@ class TCTPDialog(QtGui.QWidget):
     def en_dis_button(self):
 
         if self.identificaOLineEdit.text() == "":
-            print self.buttonBox.buttons()
+            print(self.buttonBox.buttons())
             self.buttonBox.buttons()[0].setEnabled(False)
         else:
             self.buttonBox.buttons()[0].setEnabled(True)
@@ -118,11 +118,11 @@ class TCTPDialog(QtGui.QWidget):
     def retranslateUi(self, Dialog):
 
         #Tradução dos nomes dados aos objetos para os nomes gráficos do programa
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "TC e TP - Propriedades", None, QtGui.QApplication.UnicodeUTF8))
-        self.RTCLabel.setText(QtGui.QApplication.translate("Dialog", "RTC:", None, QtGui.QApplication.UnicodeUTF8))
-        self.RTP.setText(QtGui.QApplication.translate("Dialog", "RTP: ", None, QtGui.QApplication.UnicodeUTF8))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "TC e TP - Propriedades", None, int=-1))
+        self.RTCLabel.setText(QtWidgets.QApplication.translate("Dialog", "RTC:", None, int=-1))
+        self.RTP.setText(QtWidgets.QApplication.translate("Dialog", "RTP: ", None, int=-1))
         
     if __name__ == '__main__':
-        app = QtGui.QApplication(sys.argv)
+        app = QtWidgets.QApplication(sys.argv)
         dialogTCTP = TCTPDialog()
         sys.exit(app.exec_())

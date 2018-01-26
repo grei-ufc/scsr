@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui
 import math
 import sys
 
@@ -24,7 +24,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconSubstation.png"))
         widget.setCursor(cursor)
-        print "subs"
+        print("subs")
 
     def setShapeRecl(self, widget):
         '''
@@ -32,7 +32,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconRecloser.png"))
         widget.setCursor(cursor)
-        print "recl"
+        print("recl")
 
     def setShapeBus(self, widget):
         '''
@@ -40,7 +40,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconBus2.png"))
         widget.setCursor(cursor)
-        print "bus"
+        print("bus")
 
     def setShapeNodeC(self, widget):
         '''
@@ -48,7 +48,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconNode.png"))
         widget.setCursor(cursor)
-        print "nod"
+        print("nod")
 
     def setShapeImage(self, widget, image):
         '''

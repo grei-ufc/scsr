@@ -5,7 +5,7 @@
 #        por: Lucas S Melo
 #
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 from smartpower.core.graphics import SceneWidget, ViewWidget
 from smartpower.core.cursor import Cursor
 import sys
@@ -29,15 +29,15 @@ class JanelaPrincipal(object):
 
         # define a janela pricipal do aplicativo
         main_window.setObjectName('main_window')
-        main_window.setWindowIcon(QtGui.QIcon('icon.png'))
+        main_window.setWindowIcon(QtGui.QIcon('icones/carc2.png'))
         main_window.resize(900, 700)
 
         # define o widget central do aplicativo
-        self.centralwidget = QtGui.QTabWidget(main_window)
+        self.centralwidget = QtWidgets.QTabWidget(main_window)
         self.centralwidget.setObjectName('centralwidget')
 
         # define o tipo de layout do widget central como gridLayout
-        self.gridLayout = QtGui.QGridLayout(self.centralwidget)
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName('gridLayout')
 
         # define a classe SceneWidget e ViewWidget como containers dos widgets
@@ -57,10 +57,12 @@ class JanelaPrincipal(object):
         main_window.setCentralWidget(self.centralwidget)
 
         # define a barra de menus
-        self.menubar = QtGui.QMenuBar(main_window)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 25))
+        self.menubar = QtWidgets.QMenuBar(main_window)
+        self.menubar.setGeometry(0, 0, 600, 25)
         self.menubar.setObjectName("menubar")
-        main_window.setMenuBar(self.menubar)
+        #main_window.setMenuBar(self.menubar)
+        
+        
 
         #Cria os Menu e Submenus na barra de menu
         self.fileMenu = self.menubar.addMenu('Arquivo')
@@ -74,39 +76,40 @@ class JanelaPrincipal(object):
         #Cria o submenu Texto e o coloca no menu Organizar
         self.textSubmenu = self.showMenu.addMenu('Texto')
 
+
         # define a barra de status
-        self.statusbar = QtGui.QStatusBar(main_window)
+        self.statusbar = QtWidgets.QStatusBar(main_window)
         self.statusbar.setObjectName("statusbar")
         main_window.setStatusBar(self.statusbar)
 
 
         # define o widget dockWidget dockWidget_Buttons e configura seu
         # conteudo dockWidget_Buttons_Contents
-        self.dockWidget_Buttons = QtGui.QDockWidget(main_window)
+        self.dockWidget_Buttons = QtWidgets.QDockWidget(main_window)
         self.dockWidget_Buttons.setCursor(self.cursor)
         self.dockWidget_Buttons.setObjectName("dockWidget_Buttons")
-        self.dockWidget_Buttons_Contents = QtGui.QWidget()
-        self.dockWidget_Buttons_Contents.setMinimumWidth(230)
+        self.dockWidget_Buttons_Contents = QtWidgets.QWidget()
+        self.dockWidget_Buttons_Contents.setFixedWidth(65)
         self.dockWidget_Buttons_Contents.setObjectName(
             "dockWidget_Buttons_Contents")
 
         #  define o layput dos botoes no dockWidget  gridLayout
-        self.gridLayout_dockWidget = QtGui.QGridLayout(
+        self.gridLayout_dockWidget = QtWidgets.QGridLayout(
             self.dockWidget_Buttons_Contents)
         self.gridLayout_dockWidget.setObjectName("gridLayout_dockWidget")
 
         # define o objeto QToolBox que comportara as abas de botoes
-        self.toolBox = QtGui.QToolBox(self.dockWidget_Buttons_Contents)
+        self.toolBox = QtWidgets.QToolBox(self.dockWidget_Buttons_Contents)
         self.toolBox.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.toolBox.setObjectName("toolBox")
 
         # define a primeira pagina do dockWidget
-        self.page_1 = QtGui.QWidget()
+        self.page_1 = QtWidgets.QWidget()
         self.page_1.setGeometry(QtCore.QRect(0, 0, 100, 50))
 
         # configura a primeira pagina do dockWidget
-        size_policy = QtGui.QSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        size_policy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
         size_policy.setHeightForWidth(
@@ -117,8 +120,8 @@ class JanelaPrincipal(object):
         self.page_1.setObjectName("page_1")
 
         # define o Layout da primeira pagina do dockWidget
-        self.gridlayout_page_1 = QtGui.QGridLayout(self.page_1)
-        self.gridlayout_page_1.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        self.gridlayout_page_1 = QtWidgets.QGridLayout(self.page_1)
+        self.gridlayout_page_1.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.gridlayout_page_1.setObjectName("gridlayout_page_1")
 
         # define os botoes da primeira pagina do dockWidget e insere no
@@ -129,28 +132,28 @@ class JanelaPrincipal(object):
         self.iconRecloser = QtGui.QIcon("icones/iconRecloser.png")
         self.iconLine = QtGui.QIcon("icones/iconLine.png")
         self.iconNode = QtGui.QIcon("icones/iconNode.png")
-        self.icontam = QtCore.QSize(90,90)
-        self.substationButton = QtGui.QToolButton(self.page_1)
+        self.icontam = QtCore.QSize(30,30)
+        self.substationButton = QtWidgets.QToolButton(self.page_1)
         self.substationButton.setIcon(self.iconSubstation)
         self.substationButton.setIconSize(self.icontam)
         self.substationButton.setObjectName("substationButton")
         self.substationButton.setCheckable(True)
-        self.busButton = QtGui.QToolButton(self.page_1)
+        self.busButton = QtWidgets.QToolButton(self.page_1)
         self.busButton.setIcon(self.iconBus)
         self.busButton.setIconSize(self.icontam)
         self.busButton.setObjectName("busButton")
         self.busButton.setCheckable(True)
-        self.recloserButton = QtGui.QToolButton(self.page_1)
+        self.recloserButton = QtWidgets.QToolButton(self.page_1)
         self.recloserButton.setIcon(self.iconRecloser)
         self.recloserButton.setIconSize(self.icontam)
         self.recloserButton.setObjectName("recloserButton")
         self.recloserButton.setCheckable(True)
-        self.lineButton = QtGui.QToolButton(self.page_1)
+        self.lineButton = QtWidgets.QToolButton(self.page_1)
         self.lineButton.setIcon(self.iconLine)
         self.lineButton.setIconSize(self.icontam)
         self.lineButton.setObjectName("lineButton")
         self.lineButton.setCheckable(True)
-        self.noButton = QtGui.QToolButton(self.page_1)
+        self.noButton = QtWidgets.QToolButton(self.page_1)
         self.noButton.setIcon(self.iconNode)
         self.noButton.setIconSize(self.icontam)
         self.noButton.setObjectName("noButton")
@@ -158,7 +161,7 @@ class JanelaPrincipal(object):
 
 
         # define o grupo de botoes da pagina 1 do notebook
-        self.buttonGroup = QtGui.QButtonGroup()
+        self.buttonGroup = QtWidgets.QButtonGroup()
         self.buttonGroup.addButton(self.substationButton, 0)
         self.buttonGroup.addButton(self.recloserButton, 1)
         self.buttonGroup.addButton(self.busButton, 2)
@@ -167,49 +170,50 @@ class JanelaPrincipal(object):
         self.buttonGroup.setExclusive(False)
 
         self.buttonGroup.buttonClicked[int].connect(self.buttonGroupClicked)
+        self.buttonGroup.buttonClicked[int].connect(main_window.setCursorPad)
         self.buttonGroup.buttonPressed[int].connect(self.buttonGroupPressed)
         self.buttonGroup.buttonPressed[int].connect(main_window.setCursorIcon)
-        #self.buttonGroup.buttonReleased[int].connect(main_window.setCursorPad)
-        #self.buttonGroup.buttonReleased[int].connect(self.buttonGroupReleased)
+        self.buttonGroup.buttonReleased[int].connect(self.buttonGroupReleased)
+        self.buttonGroup.buttonReleased[int].connect(main_window.setCursorIcon)
 
         # define labels da primeira pagina do dockWidget
-        self.substationLabel = QtGui.QLabel('')
-        self.substationLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.substationLabel = QtWidgets.QLabel('')
+        self.substationLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.substationLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.substationLabel.setObjectName("substationLabel")
-        self.recloserLabel = QtGui.QLabel('')
-        self.recloserLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.recloserLabel = QtWidgets.QLabel('')
+        self.recloserLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.recloserLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.recloserLabel.setObjectName("recloserLabel")
-        self.busLabel = QtGui.QLabel('')
-        self.busLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.busLabel = QtWidgets.QLabel('')
+        self.busLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.busLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.busLabel.setObjectName("busLabel")
-        self.lineLabel = QtGui.QLabel('')
-        self.lineLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.lineLabel = QtWidgets.QLabel('')
+        self.lineLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.lineLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.lineLabel.setObjectName("lineLabel")
-        self.noLabel = QtGui.QLabel('')
-        self.noLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.noLabel = QtWidgets.QLabel('')
+        self.noLabel.setAlignment(QtCore.Qt.AlignLeft)
         self.noLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.noLabel.setObjectName("noLabel")
 
         # adiciona os botoes ao gridLayout_3
         self.gridlayout_page_1.addWidget(self.substationButton, 0, 0)
-        self.gridlayout_page_1.addWidget(self.recloserButton, 0, 1)
+        self.gridlayout_page_1.addWidget(self.recloserButton, 2, 0)
         self.gridlayout_page_1.addWidget(self.substationLabel, 1, 0)
-        self.gridlayout_page_1.addWidget(self.recloserLabel, 1, 1)
-        self.gridlayout_page_1.addWidget(self.busButton, 2, 0)
-        self.gridlayout_page_1.addWidget(self.lineButton, 2, 1)
-        self.gridlayout_page_1.addWidget(self.busLabel, 3, 0)
-        self.gridlayout_page_1.addWidget(self.lineLabel, 3, 1)
-        self.gridlayout_page_1.addWidget(self.noButton, 4, 0)
-        self.gridlayout_page_1.addWidget(self.noLabel, 5, 0)
+        self.gridlayout_page_1.addWidget(self.recloserLabel, 3, 0)
+        self.gridlayout_page_1.addWidget(self.busButton, 4, 0)
+        self.gridlayout_page_1.addWidget(self.lineButton, 6, 0)
+        self.gridlayout_page_1.addWidget(self.busLabel, 5, 0)
+        self.gridlayout_page_1.addWidget(self.lineLabel, 7, 0)
+        self.gridlayout_page_1.addWidget(self.noButton, 8, 0)
+        self.gridlayout_page_1.addWidget(self.noLabel, 9, 0)
 
         # adiciona o gridLayout_3 a pagina_1 do dockWidget
         self.page_1.setLayout(self.gridlayout_page_1)
@@ -218,10 +222,10 @@ class JanelaPrincipal(object):
         self.toolBox.addItem(self.page_1, "")
 
         # define a segunda pagina do dockWidget
-        self.page_2 = QtGui.QWidget()
-        self.page_2.setGeometry(QtCore.QRect(0, 0, 100, 50))
-        self.page_2.setObjectName("page_2")
-        self.toolBox.addItem(self.page_2, "")
+        # self.page_2 = QtWidgets.QWidget()
+        # self.page_2.setGeometry(QtCore.QRect(0, 0, 100, 50))
+        # self.page_2.setObjectName("page_2")
+        # self.toolBox.addItem(self.page_2, "")
 
         self.gridLayout_dockWidget.addWidget(self.toolBox, 0, 0)
         self.dockWidget_Buttons.setWidget(self.dockWidget_Buttons_Contents)
@@ -232,7 +236,7 @@ class JanelaPrincipal(object):
         # configura os botoes da barra de ferramentas
 
         # cria e configura acao de sair do programa
-        self.actionExit = QtGui.QAction(main_window)
+        self.actionExit = QtWidgets.QAction(main_window)
 
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -243,7 +247,7 @@ class JanelaPrincipal(object):
         self.fileMenu.addAction(self.actionExit)
 
         # cria e configura acao de salvar o estado atual do programa
-        self.actionSave = QtGui.QAction(
+        self.actionSave = QtWidgets.QAction(
             main_window, triggered=self.save)
 
         icon = QtGui.QIcon()
@@ -256,7 +260,7 @@ class JanelaPrincipal(object):
 
         # cria e configura acao de abrir um arquivo com uma configuração da
         # rede montada anteriormente
-        self.actionOpen = QtGui.QAction(main_window, triggered=self.open)
+        self.actionOpen = QtWidgets.QAction(main_window, triggered=self.open)
 
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -267,7 +271,7 @@ class JanelaPrincipal(object):
         self.fileMenu.addAction(self.actionOpen)
 
         # cria e configura acao de inserir ou retirar grade no diagrama grafico
-        self.actionGrid = QtGui.QAction(
+        self.actionGrid = QtWidgets.QAction(
             main_window, triggered=self.sceneWidget.set_grid)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -279,7 +283,7 @@ class JanelaPrincipal(object):
 
         # cria e configura ação de alinhar horizontalmente itens no diagrama
         # gráfico
-        self.actionHalign = QtGui.QAction(
+        self.actionHalign = QtWidgets.QAction(
             main_window, triggered=self.sceneWidget.h_align)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -291,7 +295,7 @@ class JanelaPrincipal(object):
 
         # cria e configura ação de alinhar verticalmente items no diagrama
         # gráfico
-        self.actionValign = QtGui.QAction(
+        self.actionValign = QtWidgets.QAction(
             main_window, triggered=self.sceneWidget.v_align)
 
         icon = QtGui.QIcon()
@@ -303,7 +307,7 @@ class JanelaPrincipal(object):
         self.alignSubmenu.addAction(self.actionValign)
 
         # cria e configura acao de selecionar items no diagrama grafico
-        self.actionSelect = QtGui.QAction(
+        self.actionSelect = QtWidgets.QAction(
             main_window, triggered=self.setSelect)
 
         icon = QtGui.QIcon()
@@ -315,7 +319,8 @@ class JanelaPrincipal(object):
         self.orgMenu.addAction(self.actionSelect)
 
         # cria e configura ação de abrir a interface de simulação
-        self.action_simulate = QtGui.QAction(
+        
+        self.action_simulate = QtWidgets.QAction(
             main_window, triggered=self.sceneWidget.simulate)
 
         icon = QtGui.QIcon()
@@ -326,30 +331,44 @@ class JanelaPrincipal(object):
         #self.toolBar.addAction(self.action_simulate)
         self.simulationMenu.addAction(self.action_simulate)
 
+                #### teste
+        self.choice_simulate_1 = QtWidgets.QAction(
+            main_window, triggered=self.simulate)
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionSelect.setIcon(icon)
+        self.actionSelect.setObjectName("choiceSimulate1")
+        #self.choice_simulate_1.setShortcut('Ctrl+M')
+        #self.toolBar.addAction(self.action_simulate)
+        self.simulationMenu.addAction(self.choice_simulate_1)
+
+
         # cria e configura a acao de tornar o texto visível ou não
         ### subestação
-        self.actionTextVisibleSubstation = QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextSubstation)
+        self.actionTextVisibleSubstation = QtWidgets.QAction(
+            main_window, triggered=self.sceneWidget.setTextSubstation, checkable=True ,checked=True)
+
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionTextVisibleSubstation.setIcon(icon)
         self.actionTextVisibleSubstation.setObjectName("actionTextVisibleSubstation")
         self.textSubmenu.addAction(self.actionTextVisibleSubstation)
         ### religador
-        self.actionTextVisibleRecloser =QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextRecloser)
+        self.actionTextVisibleRecloser =QtWidgets.QAction(
+            main_window, triggered=self.sceneWidget.setTextRecloser, checkable=True ,checked=True)
         self.actionTextVisibleRecloser.setIcon(icon)
         self.actionTextVisibleRecloser.setObjectName("actionTextVisibleRecloser")
         self.textSubmenu.addAction(self.actionTextVisibleRecloser)
         ### barra
-        self.actionTextVisibleBus =QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextBus)
+        self.actionTextVisibleBus =QtWidgets.QAction(
+            main_window, triggered=self.sceneWidget.setTextBus, checkable=True ,checked=True)
         self.actionTextVisibleBus.setIcon(icon)
         self.actionTextVisibleBus.setObjectName("actionTextVisibleBus")
         self.textSubmenu.addAction(self.actionTextVisibleBus)
         ### no de carga
-        self.actionTextVisibleNodeC =QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextNodeC)
+        self.actionTextVisibleNodeC =QtWidgets.QAction(
+            main_window, triggered=self.sceneWidget.setTextNodeC, checkable=True ,checked=True)
         self.actionTextVisibleNodeC.setIcon(icon)
         self.actionTextVisibleNodeC.setObjectName("actionTextVisibleNodeC")
         self.textSubmenu.addAction(self.actionTextVisibleNodeC)
@@ -364,30 +383,43 @@ class JanelaPrincipal(object):
             Callback chamada no momento em que um item e inserido
             no diagrama grafico
         '''
-        # self.buttonGroup.button(item_type).setChecked(False)
-        # self.sceneWidget.set_mode(self.sceneWidget.MoveItem)
-        pass
+        if item_type != 3:
+
+            self.buttonGroup.button(item_type).setChecked(False)
+            self.sceneWidget.set_mode(self.sceneWidget.MoveItem)
+            self.dockWidget_Buttons.setCursor(Cursor(""))
+            self.centralwidget.setCursor(Cursor(""))
+
+        else:
+            pass
+        
 
     def save(self):
         '''
             Função que salva o diagrama gráfico em um arquivo .XML
         '''
-        filename = QtGui.QFileDialog.getSaveFileName(
+        filename = QtWidgets.QFileDialog.getSaveFileName(
             None, 'Salvar Diagrama', os.getenv('HOME'))
         file = models.DiagramToXML(self.sceneWidget)
         file.write_xml(filename[0])
-        filename_CIM = filename[0] + '_CIM'
+        filename_CIM = filename[0] + '_CIM.xml'
 
         file2 = models.CimXML(self.sceneWidget)
         file2.write_xml(filename_CIM)
 
         return filename_CIM
 
+    def simulate(self):
+        bridge=models.start_conversion(self.sceneWidget)
+        self.sceneWidget.simulate_1(bridge)
+        pass
+
+
     def open(self):
         '''
             Função que redesenha um diagrama gráfico que foi salvo anteriormente em um arquivo .XML
         '''
-        filename = QtGui.QFileDialog.getOpenFileName(
+        filename = QtWidgets.QFileDialog.getOpenFileName(
             None, 'Abrir Diagrama', os.getenv('HOME'))
         file = models.XMLToDiagram(self.sceneWidget, filename[0])
 
@@ -405,20 +437,38 @@ class JanelaPrincipal(object):
         for id in range(6):
             self.buttonGroup.button(id).setChecked(False)
 
+        
+
     def buttonGroupClicked(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
             de itens é clicado.
         '''
+        self.buttonGroup.button(id).setChecked(True)
+
+        # Altera o icone de acordo com o button pressionado:
+
+        buttons = self.buttonGroup.buttons()
+        for button in buttons:
+            if self.buttonGroup.button(id) != button:
+                button.setChecked(False)
         if id==3:
            self.buttonGroup.button(id).setChecked(True)
-        pass
+        
+        else:
+            self.buttonGroup.button(id).setChecked(False)
+            self.sceneWidget.set_mode(self.sceneWidget.MoveItem)
+            self.dockWidget_Buttons.setCursor(Cursor(""))
+            self.centralwidget.setCursor(Cursor(""))
+
+        
 
     def buttonGroupPressed(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
             de itens é pressionado.
         '''
+
         self.buttonGroup.button(id).setChecked(True)
 
         # Altera o icone de acordo com o button pressionado:
@@ -429,19 +479,43 @@ class JanelaPrincipal(object):
                 button.setChecked(False)
 
         # Altera o modo para: inserir linha, inserir item ou mover item.
+
+
+
         if id == 3:
             self.sceneWidget.set_mode(SceneWidget.InsertLine)
         else:
             self.sceneWidget.set_item_type(id)
             self.sceneWidget.set_mode(SceneWidget.InsertItem)
 
-    def buttonGroupReleased(self):
+        self.dockWidget_Buttons.setCursor(Cursor(""))
+
+
+
+
+
+
+    def buttonGroupReleased(self,id):
         '''
             Callback chamada no momento em que um botão de inserção
             de itens é liberado.
-        '''
 
-        self.dockWidget_Buttons.setCursor(Cursor(""))
+'''
+        buttons = self.buttonGroup.buttons()
+        for button in buttons:
+            if self.buttonGroup.button(id) != button:
+                button.setChecked(False)
+
+        # if self.buttonGroup.button(id) != QtCore.Qt.LeftButton:
+        #     self.dockWidget_Buttons.setCursor(Cursor(""))
+        #     self.centralwidget.setCursor(Cursor(""))
+        if id == 3:
+            self.sceneWidget.set_mode(SceneWidget.InsertLine)
+        else:
+            
+            self.sceneWidget.set_item_type(id)
+            self.sceneWidget.set_mode(SceneWidget.InsertItem)
+
 
 
     def buttonGroupUncheck(self):
@@ -457,208 +531,219 @@ class JanelaPrincipal(object):
 
     def retranslateUi(self, main_window):
 
-        main_window.setWindowTitle(QtGui.QApplication.translate(
+        main_window.setWindowTitle(QtWidgets.QApplication.translate(
             "main_window", "Smart Power v0.2 - Simulador de Redes Elétricas de Distribuição",
-            None, QtGui.QApplication.UnicodeUTF8))
+            None, int=-1))
 
 
         self.substationButton.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Transformador", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.busButton.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Barra", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Barra", None, int=-1))
 
         self.busLabel.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Barra", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Barra", None, int=-1))
 
         self.substationLabel.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Transformador", None,
-                QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Trafo", None,
+                int=-1))
 
         self.recloserButton.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Elemento Interruptor", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.recloserLabel.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Chaves", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.lineButton.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Linha", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Linha", None, int=-1))
 
         self.lineLabel.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Linha", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Linha", None, int=-1))
 
         self.noButton.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Nó de Carga", None, int=-1))
 
         self.noLabel.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Nó de \n Carga", None, int=-1))
 
         self.toolBox.setItemText(
             self.toolBox.indexOf(self.page_1),
-            QtGui.QApplication.translate(
-                "main_window", "Pagina 1", None,
-                QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "", None,
+                int=-1))
 
-        self.toolBox.setItemText(
-            self.toolBox.indexOf(self.page_2), QtGui.QApplication.translate(
-                "main_window", "Pagina 2", None,
-                QtGui.QApplication.UnicodeUTF8))
+        # self.toolBox.setItemText(
+        #     self.toolBox.indexOf(self.page_2), QtWidgets.QApplication.translate(
+        #         "main_window", "Pagina 2", None,
+        #         int=-1))
 
         self.actionExit.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Sair", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Sair", None, int=-1))
 
         self.actionExit.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Sair", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Sair", None, int=-1))
         '''
         self.actionExit.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "4, Backspace", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionSave.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Salvar", None, int=-1))
 
         self.actionSave.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Salvar", None, int=-1))
         '''
         self.actionSave.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "4, Ctrl + S", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionOpen.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Abrir", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Abrir", None, int=-1))
 
         self.actionOpen.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Abrir", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Abrir", None, int=-1))
         '''
         self.actionOpen.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "4, Ctrl + A", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionGrid.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Grade", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Grade", None, int=-1))
 
         self.actionGrid.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Grade", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Grade", None, int=-1))
         '''
         self.actionGrid.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Ctrl, g", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionHalign.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Horizontalmente", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.actionHalign.setToolTip(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Alinha Horizontalmente", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionHalign.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Ctrl, h", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionValign.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Verticalmente", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.actionValign.setToolTip(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Alinha Verticalmente", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionValign.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Ctrl, h", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionSelect.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Selecionar Items", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
 
         self.actionSelect.setToolTip(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Selecionar Items", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.actionSelect.setShortcut(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Ctrl, e", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
         '''
         self.action_simulate.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Simular", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
+            
 
         self.action_simulate.setToolTip(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 "main_window", "Simular", None,
-                QtGui.QApplication.UnicodeUTF8))
+                int=-1))
+
+        self.choice_simulate_1.setText(
+            QtWidgets.QApplication.translate(
+                "main_window", "Simular_curto", None,
+                int=-1))
+
+        self.choice_simulate_1.setToolTip(
+            QtWidgets.QApplication.translate(
+                "main_window", "Simular_curto", None,
+                int=-1))
 
         ## Configuração das QActions para exibir textos dos elementos, sem atalhos.
         self.actionTextVisibleSubstation.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Subestações", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Subestações", None, int=-1))
 
         self.actionTextVisibleSubstation.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Exibe ou apaga os textos dos elementos do tipo Subestação", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Subestação", None, int=-1))
 
         self.actionTextVisibleRecloser.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Religadores", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Religadores", None, int=-1))
 
         self.actionTextVisibleRecloser.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, int=-1))
 
         self.actionTextVisibleBus.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Barras", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Barras", None, int=-1))
 
         self.actionTextVisibleBus.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, int=-1))
 
         self.actionTextVisibleNodeC.setText(
-            QtGui.QApplication.translate(
-                "main_window", "Nós de Carga", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Nós de Carga", None, int=-1))
 
         self.actionTextVisibleNodeC.setToolTip(
-            QtGui.QApplication.translate(
-                "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+            QtWidgets.QApplication.translate(
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, int=-1))
 
 
-class ControlMainWindow(QtGui.QMainWindow):
+class ControlMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
@@ -675,7 +760,7 @@ class ControlMainWindow(QtGui.QMainWindow):
         '''
         self.setCursorPad(1)
         super(ControlMainWindow, self).mouseReleaseEvent(mouse_event)
-        sinal = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
+        sinal = QtWidgets.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
         sinal.setPos(self.ui.graphicsView.mapToScene(
             self.ui.graphicsView.mapFromGlobal(self.cursor.pos())))
         self.ui.sceneWidget.mouseReleaseEvent(sinal)
@@ -686,6 +771,7 @@ class ControlMainWindow(QtGui.QMainWindow):
             Callback que altera o formato do cursor dando a impressão visual de
             'arrastar' o elemento para dentro do diagrama gráfico.
         '''
+
         self.cursor.setShape(self, id)
         self.ui.cursor.setShape(self.ui.dockWidget_Buttons, id)
 
@@ -697,7 +783,7 @@ class ControlMainWindow(QtGui.QMainWindow):
         self.ui.cursor.setShapePad(self.ui.dockWidget_Buttons)
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     mySW = ControlMainWindow()
     mySW.show()
     sys.exit(app.exec_())

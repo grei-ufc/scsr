@@ -7,24 +7,24 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 import sys
 
-class AvisoConexaoDialog(QtGui.QWidget):
+class AvisoConexaoDialog(QtWidgets.QWidget):
 
     def __init__(self):
         super(AvisoConexaoDialog, self).__init__()
-        self.dialog = QtGui.QDialog(self)
+        self.dialog = QtWidgets.QDialog(self)
         self.setupUi(self.dialog)
         self.dialog.exec_()
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(332, 86)
-        self.pushButton = QtGui.QPushButton(Dialog)
+        self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(110, 50, 81, 27))
         self.pushButton.setObjectName("pushButton")
-        self.label = QtGui.QLabel(Dialog)
+        self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(10, 10, 311, 21))
         self.label.setObjectName("label")
 
@@ -33,7 +33,7 @@ class AvisoConexaoDialog(QtGui.QWidget):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Erro", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("Dialog", "OK", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Dialog", "Você deve excluir as outras conexões primeiro!", None, QtGui.QApplication.UnicodeUTF8))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Erro", None, int=-1))
+        self.pushButton.setText(QtWidgets.QApplication.translate("Dialog", "OK", None, int=-1))
+        self.label.setText(QtWidgets.QApplication.translate("Dialog", "Você deve excluir as outras conexões primeiro!", None, int=-1))
 

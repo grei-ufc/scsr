@@ -1,7 +1,7 @@
 from mygrid.power_flow import backward_forward_sweep
 import mygrid.short_circuit.symmetrical_components as curto
 import pandas as pd
-import smartpower.core.cim as cim
+import smartpower.core.models as models
 # import plotly.plotly as py
 # import plotly.figure_factory as ff
 # import plotly
@@ -10,20 +10,20 @@ import numpy as np
 # import sys
 from collections import OrderedDict
 
-def start_conversion(path):
+def start_conversion(scene):
 
 
-    data=cim.carregar_dados(path)
-    trechos_data=cim.gerar_trechos(data)
-    chaves,chaves_nome=cim.gerar_chaves(data['chaves'])
-    vizinhos=cim._identificar_nos_vizinhos(data['nos'],trechos_data,data)
-    nos_de_carga=cim.gerar_nos_de_carga(vizinhos,data)
-    trechos=cim.gerar_trechos_grid(trechos_data,nos_de_carga,chaves,data)
-    setores=cim.gerar_setores(trechos_data,nos_de_carga,data)
-    cim.gerar_ligacao_chaves_setores(trechos_data,chaves,setores,data)
-    transformadores=cim.gerar_transformadores(data)
-    alimentadores=cim.gerar_alimentadores(data,trechos_data,trechos,setores,chaves)
-    subestacoes=cim.gerar_sub_estacao(alimentadores,data,transformadores)
+    data=models.carregar_dados(scene)
+    trechos_data=models.gerar_trechos(data)
+    chaves,chaves_nome=models.gerar_chaves(data['chaves'])
+    vizinhos=models._identificar_nos_vizinhos(data['nos'],trechos_data,data)
+    nos_de_carga=models.gerar_nos_de_carga(vizinhos,data)
+    trechos=models.gerar_trechos_grid(trechos_data,nos_de_carga,chaves,data)
+    setores=models.gerar_setores(trechos_data,nos_de_carga,data)
+    models.gerar_ligacao_chaves_setores(trechos_data,chaves,setores,data)
+    transformadores=models.gerar_transformadores(data)
+    alimentadores=models.gerar_alimentadores(data,trechos_data,trechos,setores,chaves)
+    subestacoes=models.gerar_sub_estacao(alimentadores,data,transformadores)
  
 
     for i in subestacoes:

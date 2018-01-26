@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PySide import QtCore, QtGui, QtSvg
+from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
 import math
 import sys
+from bs4 import BeautifulSoup as bs
 # Importa os módulos necessários para implementação do diagrama gráfico
-from elementos import Religador, BusBarSection, Substation, Condutor
-from elementos import EnergyConsumer
+from smartpower.core.elementos import Religador, BusBarSection, Substation, Condutor
+from smartpower.core.elementos import EnergyConsumer
 from smartpower.gui.dialogs.DialogRecloser import RecloserDialog
 from smartpower.gui.dialogs.DialogBarra import BarraDialog
 from smartpower.gui.dialogs.DialogConductor import ConductorDialog
@@ -16,9 +17,11 @@ from smartpower.gui.dialogs.avisoReligador import AvisoReligador
 
 from smartpower.core import Bridge
 
+
+
 lista_no_conectivo = []
 
-class DashedLine(QtGui.QGraphicsLineItem):
+class DashedLine(QtWidgets.QGraphicsLineItem):
     '''
         Classe que implementa o objeto DashedLine, utilizado para indicar que um
         elemento do diagrama foi selecionado. Sua representaçao e uma borda
@@ -48,7 +51,7 @@ class DashedLine(QtGui.QGraphicsLineItem):
                        )
         painter.drawLine(self.line())
 
-class Edge(QtGui.QGraphicsLineItem):
+class Edge(QtWidgets.QGraphicsLineItem):
     '''
         Classe que implementa o objeto Edge que liga dois objetos Node um ao
         outro
@@ -69,6 +72,7 @@ class Edge(QtGui.QGraphicsLineItem):
         # QtGui.QGraphicsLineItem. Sua linha é definida por um objeto do tipo
         # QtCore.QLineF. (Ver esta duas funções na biblioteca PySide)
         super(Edge, self).__init__()
+        self.text_config = 'Custom'
         self.id = id(self)
         self.w1 = w1
         self.w2 = w2
@@ -81,7 +85,7 @@ class Edge(QtGui.QGraphicsLineItem):
         line = QtCore.QLineF(self.w1.pos(), self.w2.pos())
         self.setLine(line)
         self.setZValue(-1)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable, True)
         # Cria uma flag que determina se a edge está ou não fixa a uma barra
         self.isFixed = False
         # Cria uma flag que fixa a edge numa barra.
@@ -324,13 +328,13 @@ class Edge(QtGui.QGraphicsLineItem):
     def contextMenuEvent(self, event):
         '''
             Callback chamada quando a linha é selecionada, executando
-            o myLineMenu (QtGui.QMenu), o menu de configuração de condutor.
+            o myLineMenu (QtWidgets.QMenu), o menu de configuração de condutor.
         '''
         self.scene().clearSelection()
         self.setSelected(True)
         self.myEdgeMenu.exec_(event.screenPos() + QtCore.QPointF(20, 20))
 
-class Text(QtGui.QGraphicsTextItem):
+class Text(QtWidgets.QGraphicsTextItem):
     '''
         Classe que implementa o objeto Text Genérico
     '''
@@ -338,8 +342,8 @@ class Text(QtGui.QGraphicsTextItem):
     # Cria dois sinais, um relacionado à mudança de posição/geometria do item
     # e outro a quando o item perde o foco, ou deixa de estar selecionado.
     # (ver PySide, QtCore.Signal)
-    selectedChange = QtCore.Signal(QtGui.QGraphicsItem)
-    lostFocus = QtCore.Signal(QtGui.QGraphicsTextItem)
+    selectedChange = QtCore.Signal(QtWidgets.QGraphicsItem)
+    lostFocus = QtCore.Signal(QtWidgets.QGraphicsTextItem)
 
     def __init__(self, text, parent=None, scene=None):
         '''
@@ -348,8 +352,8 @@ class Text(QtGui.QGraphicsTextItem):
         super(Text, self).__init__(parent, scene)
         self.setPlainText(text)
         self.setZValue(100)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable, False)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable, False)
         self.visibility = True
 
     def itemChange(self, change, value):
@@ -357,7 +361,7 @@ class Text(QtGui.QGraphicsTextItem):
             Função virtual reimplementada para emitir sinal de mudança (ver
             Pyside, QGraphicsTextItem)
         '''
-        if change == QtGui.QGraphicsItem.ItemSelectedChange:
+        if change == QtWidgets.QGraphicsItem.ItemSelectedChange:
             self.selectedChange.emit(self)
         return value
 
@@ -369,7 +373,7 @@ class Text(QtGui.QGraphicsTextItem):
         self.lostFocus.emit(self)
         super(Text, self).focusOutEvent(event)
 
-class Node(QtGui.QGraphicsRectItem):
+class Node(QtWidgets.QGraphicsRectItem):
     '''
        Classe que implementa o objeto Node Genérico. Este elemento gráfico irá
        representar religadores, barras, subestações e nós de carga
@@ -418,6 +422,7 @@ class Node(QtGui.QGraphicsRectItem):
         # Se o item a ser inserido for do tipo religador/disjuntor/chave:
         elif self.myItemType == self.Religador:
             # Cria o objeto chave que contém os dados elétricos do elemento
+            self.nome=''
             self.chave = Religador("", 0, 0, 0, 0, 1)
             # Define o retângulo.
             rect = self.setNodeRect()
@@ -425,7 +430,7 @@ class Node(QtGui.QGraphicsRectItem):
             # um texto vazio.
             self.text = Text('', self, self.scene())
             self.text.setPos(self.mapFromItem(self.text, 10, rect.height()))
-            self.chave.nome = self.text.toPlainText()
+            #self.chave.nome = self.text.toPlainText()
 
 
 
@@ -461,6 +466,7 @@ class Node(QtGui.QGraphicsRectItem):
         elif self.myItemType == self.NoDeCarga:
             rect = QtCore.QRectF(3, 10, 8, 8)
             # Triangulo que representa nó com carga
+            self.nome=''
             self.triCarga = QtGui.QPolygon()
             self.triCarga.append(QtCore.QPoint(7,9))
             self.triCarga.append(QtCore.QPoint(0,0))
@@ -483,11 +489,11 @@ class Node(QtGui.QGraphicsRectItem):
         # item.
         self.myNodeMenu = node_menu
 
-        # Seta as flags do QGraphicsItem (ver QtGui.QGraphicsItem.setFlag)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)
-        self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
-        self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
+        # Seta as flags do QGraphicsItem (ver QtWidgets.QGraphicsItem.setFlag)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable, True)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable, True)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsFocusable, True)
+        self.setFlag(QtWidgets.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
         Node.allNodes.append(self)
 
@@ -780,13 +786,13 @@ class Node(QtGui.QGraphicsRectItem):
         '''
             Método que detecta mudancas na posição do objeto Node
         '''
-        # Se a mudança for posição (ver QtGui.QGraphicsItem.ItemPositionChange)
+        # Se a mudança for posição (ver QtWidgets.QGraphicsItem.ItemPositionChange)
         # é preciso atualizar as edges deste Node uma a uma:
-        if change == QtGui.QGraphicsItem.ItemPositionChange:
+        if change == QtWidgets.QGraphicsItem.ItemPositionChange:
             for edge in self.edges:
                 edge.update_position()
         # Condição interna de retorno necessária.
-        return QtGui.QGraphicsItem.itemChange(self, change, value)
+        return QtWidgets.QGraphicsItem.itemChange(self, change, value)
 
     def mousePressEvent(self, mouse_event):
         '''
@@ -826,7 +832,7 @@ class Node(QtGui.QGraphicsRectItem):
         # retângulo QtCore.QRectF. Este elipse é adicionado na posição em que o
         # botão foi solto. Este elipse precisa ser removido ao final da função,
         # caso contrário ele ficará visível na cena.
-        ell = QtGui.QGraphicsEllipseItem()
+        ell = QtWidgets.QGraphicsEllipseItem()
         ell.setRect(
             QtCore.QRectF(
                 mouse_event.scenePos() - QtCore.QPointF(10, 10),
@@ -1009,7 +1015,7 @@ class Node(QtGui.QGraphicsRectItem):
         # Executa o menu, dependendo do tipo de item.
         self.myNodeMenu.exec_(event.screenPos())
 
-class SceneWidget(QtGui.QGraphicsScene):
+class SceneWidget(QtWidgets.QGraphicsScene):
     '''
         Classe que implementa o container Gráfico onde os
         widgets residirão, denominado cena.
@@ -1053,7 +1059,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         self.create_menus()
         # Cria a pilha de comandos UNDO para implementação dos comandos
         # desfazer e refazer (CTRL+Z e CTRL+Y). PENDÊNCIA.
-        self.undoStack = QtGui.QUndoStack()
+        self.undoStack = QtWidgets.QUndoStack()
         # Cria os dicionários de padrões dos relés (ver create_dict_recloser em
         # SceneWidget
         self.custom_dict = {'Corrente Nominal': 0,
@@ -1061,7 +1067,20 @@ class SceneWidget(QtGui.QGraphicsScene):
         self.create_dict_recloser(100, 4, 4, 'ABB')
         self.create_dict_recloser(150, 5, 3, 'SEL')
         self.create_dict_recloser(200, 6, 3, 'BOSCH')
-        print "CENA CRIADA"
+
+        a=open('smartpower/core/cabos.xml','r')
+        cabos_xml=bs(a,"lxml-xml")
+        self.dic_cab={}
+        for i in cabos_xml.find_all('condutor'):
+        	cab={}
+        	cab['ampacidade']=i.get('ampacidade')
+        	cab['rp']=i.get('rp')
+        	cab['xp']=i.get('xp')
+        	cab['rz']=i.get('rz')
+        	cab['xz']=i.get('xz')
+        	self.dic_cab[i.get('nome')]=cab
+        print("CENA CRIADA")
+
 
     def create_dict_recloser(self, corrente, capacidade, num_rel, padrao):
         '''
@@ -1078,7 +1097,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             mousePress é detectado no diagrama grafico
         '''
 
-        print "press Scene"
+        print("press Scene")
 
         super(SceneWidget, self).mousePressEvent(mouse_event)
         # Armazena em um atributo a posição em que o mouse foi apertado.
@@ -1101,7 +1120,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             # O elipse dá precisão ao clique do usuário. Toda ação será inter-
             # pretada com uma margem de seleção ao redor, representada pelo
             # elipse.
-            ell = QtGui.QGraphicsEllipseItem()
+            ell = QtWidgets.QGraphicsEllipseItem()
             ell.setRect(
                 QtCore.QRectF(
                     mouse_event.scenePos()
@@ -1145,7 +1164,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         if self.myMode == self.InsertLine:
             # Cria o elipse para o mesmo fim explicado anteriormente: dar
             # margem de ação para os "presses" do mouse
-            ell = QtGui.QGraphicsEllipseItem()
+            ell = QtWidgets.QGraphicsEllipseItem()
             ell.setRect(
                 QtCore.QRectF(
                     mouse_event.scenePos()
@@ -1188,7 +1207,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         self.start_item = item
                     # 3) Se este item for outro elipse, seta a colisão como
                     # colisão de elipse.
-                    elif isinstance(item, QtGui.QGraphicsEllipseItem):
+                    elif isinstance(item, QtWidgets.QGraphicsEllipseItem):
                         collision = ellipse_collision
             # Define uma posição inicial como sendo a posição de press do
             # mouse.
@@ -1216,7 +1235,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             # Terminados os testes, cria uma linha que está pronta para ser
             # criada e atualizada à medida que o usuário move o mouse após o
             # press.
-            self.line = QtGui.QGraphicsLineItem(
+            self.line = QtWidgets.QGraphicsLineItem(
                 QtCore.QLineF(
                     self.l0,
                     self.l0))
@@ -1243,7 +1262,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             selection = True
             if selection:
                 init_point = mouse_event.scenePos()
-                self.selectRect = QtGui.QGraphicsRectItem(
+                self.selectRect = QtWidgets.QGraphicsRectItem(
                     QtCore.QRectF(init_point, init_point))
                 self.selectRect.setPen(
                     QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.DashLine))
@@ -1256,7 +1275,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             priority_on = False
             priority_node = False
             # Cria o elipse de precisão.
-            ell = QtGui.QGraphicsEllipseItem()
+            ell = QtWidgets.QGraphicsEllipseItem()
             ell.setRect(
                 QtCore.QRectF(
                     mouse_event.scenePos()
@@ -1278,7 +1297,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                     # Se o item for outro elipse, e não houver prioridade de
                     # Node ou Edge, simplesmente limpa a seleção de objetos da
                     # cena.
-                    if (isinstance(item, QtGui.QGraphicsEllipseItem)
+                    if (isinstance(item, QtWidgets.QGraphicsEllipseItem)
                             and not priority_on):
                         self.clearSelection()
                     # Se o item for um Node, o mesmo é selecionado.
@@ -1329,7 +1348,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             os dois elementos que estão ligados pela linha criada no evento
             mousePress.
         '''
-        print "Release Scene"
+        print("Release Scene")
 
         # Se o modo atual for de inserção de linha, desligam-se as prioridades
         # de node e edge e cria uma flag block_on.
@@ -1342,7 +1361,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             if self.no is not None:
                 self.removeItem(self.no)
             # Cria o elipse de precisão localizado onde o mouse foi apertado.
-            ell = QtGui.QGraphicsEllipseItem()
+            ell = QtWidgets.QGraphicsEllipseItem()
             ell.setRect(QtCore.QRectF(mouse_event.scenePos() -
                         QtCore.QPointF(10, 10), QtCore.QSizeF(30, 30)))
             self.addItem(ell)
@@ -1436,7 +1455,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                     # próprio, significa que não o botão do mouse não foi solto
                     # sobre nenhum elemento na cena. Assim, cria-se
                     # simplesmente um nó de passagem na posição clicada.
-                    elif (isinstance(item, QtGui.QGraphicsEllipseItem)
+                    elif (isinstance(item, QtWidgets.QGraphicsEllipseItem)
                             and not node_priority and not edge_priority):
                         self.end_item = Node(Node.NoConectivo, self.myLineMenu)
                         self.end_item.setPos(mouse_event.scenePos())
@@ -1471,12 +1490,12 @@ class SceneWidget(QtGui.QGraphicsScene):
                     self.end_item.pos().x(), 2) + math.pow(
                     self.start_item.pos().y() - self.end_item.pos().y(), 2))
             if dist < 15:
-                print "Erro: Comprimento da ligação muito pequeno!"
+                print("Erro: Comprimento da ligação muito pequeno!")
                 return
             # Se houver uma linha a ser quebrada, mas esta for fixa (ligada a
             # uma barra), a quebra não será realizada e a função retorna.
             if self.edge_broken is not None and self.edge_broken.isPermanent:
-                print "Não se pode quebrar esta linha!"
+                print("Não se pode quebrar esta linha!")
                 return
             # Correção de eventuais discrepâncias entre a associação de cena
             # para os itens supracitados.
@@ -1513,8 +1532,8 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Armazena em um atributo a posição em que o mouse foi apertado.
         self.pressPos = mouse_event.pos()
-        print mouse_event.pos()
-        print "posicao do mouse"
+        print(mouse_event.pos())
+        print("posicao do mouse")
         # Define o break_mode, utilizado no método de quebrar linhas (ver
         # break_edge em SceneWidget.
         self.break_mode = 2
@@ -1606,7 +1625,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.setSelected(False)
                 return
         # Cria o item elipse de precisão.
-        ell = QtGui.QGraphicsEllipseItem()
+        ell = QtWidgets.QGraphicsEllipseItem()
         ell.setRect(QtCore.QRectF(mouse_event.scenePos() -
                     QtCore.QPointF(10, 10), QtCore.QSizeF(30, 30)))
         self.addItem(ell)
@@ -1795,70 +1814,70 @@ class SceneWidget(QtGui.QGraphicsScene):
             chamada no momento que o usuário tiver selecionado um religador e
             pressionado a barra de espaço.
         '''
-        print "entrou"
+        print("entrou")
         for item in self.selectedItems():
             if item.myItemType == Node.Religador:
                 aviso = AvisoReligador(item.chave.normalOpen, item.chave.nome)
                 if aviso.dialog.result() == 1:
-                    print item.chave.normalOpen
+                    print(item.chave.normalOpen)
                     if item.chave.normalOpen == 1:
                         item.chave.normalOpen = 0
                     elif item.chave.normalOpen == 0:
                         item.chave.normalOpen = 1
                     item.setSelected(False)
                     item.setSelected(True)
-                    print item.chave.normalOpen
+                    print(item.chave.normalOpen)
                 else:
                     continue
 
     def create_actions(self):
         '''
             Este metodo cria as ações que serão utilizadas nos menus dos itens
-            gráficos. Auto-explicativo: ver QtGui.QAction na biblioteca Pyside.
+            gráficos. Auto-explicativo: ver QtWidgets.QAction na biblioteca Pyside.
         '''
-        self.propertysAction = QtGui.QAction(
+        self.propertysAction = QtWidgets.QAction(
             'Abrir/Fechar', self, shortcut='Enter',
             triggered=self.change_state)
-        self.deleteAction = QtGui.QAction(
+        self.deleteAction = QtWidgets.QAction(
             'Excluir Item', self, shortcut='Delete',
             triggered=self.delete_item)
-        self.increaseBusAction = QtGui.QAction(
+        self.increaseBusAction = QtWidgets.QAction(
             'Aumentar Barra', self, shortcut='Ctrl + a',
             triggered=self.increase_bus)
-        self.decreaseBusAction = QtGui.QAction(
+        self.decreaseBusAction = QtWidgets.QAction(
             'Diminuir Barra', self, shortcut='Ctrl + d',
             triggered=self.decrease_bus)
-        self.alignHLineAction = QtGui.QAction(
+        self.alignHLineAction = QtWidgets.QAction(
             'Alinha Linha H', self, shortcut='Ctrl + h',
             triggered=self.align_line_h)
-        self.alignVLineAction = QtGui.QAction(
+        self.alignVLineAction = QtWidgets.QAction(
             'Alinhar Linha V', self, shortcut='Ctrl + v',
             triggered=self.align_line_v)
-        self.simulate_action = QtGui.QAction(
+        self.simulate_action = QtWidgets.QAction(
             'Simular', self, shortcut='Ctrl + m',
             triggered=self.simulate)
 
     def create_menus(self):
         '''
             Este metodo cria os menus de cada um dos itens gráficos: religador,
-            subestação, barra e linha. Auto-explicativo: ver QtGui.QMenu na
+            subestação, barra e linha. Auto-explicativo: ver QtWidgets.QMenu na
             biblioteca do Pyside.
         '''
-        self.myBusMenu = QtGui.QMenu('Menu Bus')
+        self.myBusMenu = QtWidgets.QMenu('Menu Bus')
         self.myBusMenu.addAction(self.increaseBusAction)
         self.myBusMenu.addAction(self.decreaseBusAction)
         self.myBusMenu.addAction(self.deleteAction)
         self.myBusMenu.addAction(self.propertysAction)
 
-        self.myRecloserMenu = QtGui.QMenu('Menu Recloser')
+        self.myRecloserMenu = QtWidgets.QMenu('Menu Recloser')
         self.myRecloserMenu.addAction(self.propertysAction)
         self.myRecloserMenu.addAction(self.deleteAction)
 
-        self.mySubstationMenu = QtGui.QMenu('Menu Subestacao')
+        self.mySubstationMenu = QtWidgets.QMenu('Menu Subestacao')
         self.mySubstationMenu.addAction(self.propertysAction)
         self.mySubstationMenu.addAction(self.deleteAction)
 
-        self.myLineMenu = QtGui.QMenu('Menu Linha')
+        self.myLineMenu = QtWidgets.QMenu('Menu Linha')
         self.myLineMenu.addAction(self.alignHLineAction)
         self.myLineMenu.addAction(self.alignVLineAction)
         self.myLineMenu.addAction(self.propertysAction)
@@ -1938,8 +1957,8 @@ class SceneWidget(QtGui.QGraphicsScene):
                     dialog = RecloserDialog(item)
                     # Caso o usuário aperte "OK":
                     if dialog.dialog.result() == 1:
-                        item.text_config = unicode(
-                            dialog.testeLineEdit.currentText())
+                        # item.text_config = unicode(
+                        #     dialog.testeLineEdit.currentText())
                         # Válido para cada caixa de entrada: Se a entrada do
                         # usuário for em branco, o campo continua com o mesmo
                         # valor atribuído a ele anteriormente. Caso contrário,
@@ -2056,15 +2075,17 @@ class SceneWidget(QtGui.QGraphicsScene):
                         else:
                             item.substation.i_pos = dialog.i_posLineEdit.text()
 
-                        if dialog.r_zeroLineEdit == "":
+                        if dialog.r_zeroLineEdit.text() == "":
                             pass
                         else:
-                            item.substation.r_zero = dialog.r_zeroLineEdit.text()
+                            item.substation.r_zero = \
+                            dialog.r_zeroLineEdit.text()
 
-                        if dialog.i_zeroLineEdit == "":
+                        if dialog.i_zeroLineEdit.text() == "":
                             pass
                         else:
-                            item.substation.i_zero = dialog.i_zeroLineEdit.text()
+                            item.substation.i_zero = \
+                            dialog.i_zeroLineEdit.text()
 
                     else:
                         return dialog.dialog.result()
@@ -2097,41 +2118,46 @@ class SceneWidget(QtGui.QGraphicsScene):
             # configuração da linha. O procedimento é análogo ao feito para
             # o caso Node.
             if isinstance(item, Edge):
-                print str(item.linha.id)
+                
                 dialog = ConductorDialog(item)
                 if dialog.dialog.result() == 1:
-                        if dialog.comprimentoLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.comprimento = \
-                                dialog.comprimentoLineEdit.text()
-                        if dialog.resistenciaLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.resistencia = \
-                                dialog.resistenciaLineEdit.text()
-                        if dialog.resistenciaZeroLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.resistencia_zero = \
-                                dialog.resistenciaZeroLineEdit.text()
-                        if dialog.reatanciaLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.reatancia = \
-                                dialog.reatanciaLineEdit.text()
-                        if dialog.reatanciaZeroLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.reatancia_zero = \
-                                dialog.reatanciaZeroLineEdit.text()
-                        if dialog.ampacidadeLineEdit.text() == "":
-                            pass
-                        else:
-                            item.linha.ampacidade = \
-                                dialog.ampacidadeLineEdit.text()
+
+                    item.text_config=dialog.condutorLineEdit.currentText()
+                    
+
+
+                    if dialog.comprimentoLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.comprimento = \
+                            dialog.comprimentoLineEdit.text()
+                    if dialog.resistenciaLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.resistencia = \
+                            dialog.resistenciaLineEdit.text()
+                    if dialog.resistenciaZeroLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.resistencia_zero = \
+                            dialog.resistenciaZeroLineEdit.text()
+                    if dialog.reatanciaLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.reatancia = \
+                            dialog.reatanciaLineEdit.text()
+                    if dialog.reatanciaZeroLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.reatancia_zero = \
+                            dialog.reatanciaZeroLineEdit.text()
+                    if dialog.ampacidadeLineEdit.text() == "":
+                        pass
+                    else:
+                        item.linha.ampacidade = \
+                            dialog.ampacidadeLineEdit.text()
                 else:
-                        return dialog.dialog.result()
+                    return dialog.dialog.result()
 
     def increase_bus(self):
         '''
@@ -2321,72 +2347,120 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def simulate(self):
         '''
-            Inicia a simulação: cálculos de fluxo de carga e curto circuito.
-        '''
-        # Força o usuário a salvar o diagrama antes da simulação
+        #     Inicia a simulação: cálculos de fluxo de carga e curto circuito.
+        # '''
+        # # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
         # Roda o algoritmo conversor CIM >> XML padrão RNP
-        bridge = Bridge.Convert(path)
+        brigde=Bridge.start_conversion(path)
         #Monta a RNP, carregando o caminho do XML em padrão RNP
-        load = xml2objects.Carregador(bridge.path)
-        # Carrega a topologia
-        top = load.carregar_topologia()
-        sub1 = top["subestacoes"]["SE2"]
-        sub1.calculaimpedanciaeq()
-        data1 = sub1.calculacurto('monofasico')
-        #print data1[0]
-        # sub1.calculacurto('trifasico')
-        # sub1.calculacurto('bifasico')
-        # sub1.calculacurto('monofasico_minimo')
-        # sub1.calcular_fluxo_de_carga()
-        # Abre a aba de simulação
-        self.main_window.sim_view = QtGui.QTabWidget()
-        self.main_window.centralwidget.addTab(self.main_window.sim_view,QtGui.QApplication.translate(
+        self.main_window.sim_view = QtWidgets.QTabWidget()
+
+
+        self.main_window.centralwidget.addTab(self.main_window.sim_view,QtWidgets.QApplication.translate(
                     "main_window", "Simulação", None,
-                    QtGui.QApplication.UnicodeUTF8))
+                    int=-1))
         # Cria uma tabela para apresentar os dados de curto-circuito e a adiciona como uma tab da tab
         # simulação.
-        self.main_window.sim_sc_table = QtGui.QTableWidget()
-        self.main_window.sim_sc_grid_layout = QtGui.QGridLayout()
+
+        self.config_simulate(brigde)
+
+    def simulate_1(self,bridge):
+        '''
+        #     Inicia a simulação: cálculos de fluxo de carga e curto circuito.
+        # '''
+        # # Força o usuário a salvar o diagrama antes da simulação
+        
+        # Roda o algoritmo conversor CIM >> XML padrão RNP
+        
+        #Monta a RNP, carregando o caminho do XML em padrão RNP
+        self.main_window.sim_view = QtWidgets.QTabWidget()
+
+
+        self.main_window.centralwidget.addTab(self.main_window.sim_view,QtWidgets.QApplication.translate(
+                    "main_window", "Simulação", None,
+                    int=-1))
+        # Cria uma tabela para apresentar os dados de curto-circuito e a adiciona como uma tab da tab
+        # simulação.
+
+        self.config_simulate(bridge)
+        pass
+
+
+    def config_simulate(self,brigde):
+        curtos=brigde['curtos']
+
+
+        for i in curtos:
+            self.main_window.sim_sc_table = QtWidgets.QTableWidget()
+            self.main_window.sim_sc_grid_layout = QtWidgets.QGridLayout()
+            self.main_window.sim_sc_grid_layout.addWidget(self.main_window.sim_sc_table,0,0)
+            self.main_window.sim_view.addTab(self.main_window.sim_sc_table,QtWidgets.QApplication.translate(
+                        "main_window", "Curto-Circuito "+i, None))
+            # Seta o número de colunas da tabela
+            self.main_window.sim_sc_table.setColumnCount(3)
+            # Seta o número de linhas de dados
+            self.main_window.sim_sc_table.setRowCount(len(curtos[i])-1)
+            # Adiciona os cabeçalhos horizontal e vertical a partir dos dados obtidos
+            self.main_window.sim_sc_table.setHorizontalHeaderLabels(['Trecho','Curto Pu','Curto (A)'])
+
+            for row in curtos[i]:
+                for col in range(self.main_window.sim_sc_table.columnCount()):
+                    self.main_window.sim_sc_table.setItem(curtos[i].index(row),col, QtWidgets.QTableWidgetItem(row[col]))
+
+        nos=brigde['niveis_de_tensao']
+
+        self.main_window.sim_sc_table = QtWidgets.QTableWidget()
+        self.main_window.sim_sc_grid_layout = QtWidgets.QGridLayout()
         self.main_window.sim_sc_grid_layout.addWidget(self.main_window.sim_sc_table,0,0)
-        self.main_window.sim_view.addTab(self.main_window.sim_sc_table,QtGui.QApplication.translate(
-                    "main_window", "Curto-Circuito", None))
+        self.main_window.sim_view.addTab(self.main_window.sim_sc_table,QtWidgets.QApplication.translate(
+                    "main_window", 'niveis_de_tensao', None))
+        # Seta o número de colunas da tabela
+        self.main_window.sim_sc_table.setColumnCount(4)
+        # Seta o número de linhas de dados
+        self.main_window.sim_sc_table.setRowCount(len(nos))
+        # Adiciona os cabeçalhos horizontal e vertical a partir dos dados obtidos
+        self.main_window.sim_sc_table.setHorizontalHeaderLabels(['No','Tensao (V)','(kW)','(KQ)'])
+        for row in nos:
+            for col in range(4):
+                self.main_window.sim_sc_table.setItem(nos.index(row),col, QtWidgets.QTableWidgetItem(row[col]))
+                
+
+        trechos=brigde['trechos']
+
+        self.main_window.sim_sc_table = QtWidgets.QTableWidget()
+        self.main_window.sim_sc_grid_layout = QtWidgets.QGridLayout()
+        self.main_window.sim_sc_grid_layout.addWidget(self.main_window.sim_sc_table,0,0)
+        self.main_window.sim_view.addTab(self.main_window.sim_sc_table,QtWidgets.QApplication.translate(
+                    "main_window", 'trechos', None))
         # Seta o número de colunas da tabela
         self.main_window.sim_sc_table.setColumnCount(3)
         # Seta o número de linhas de dados
-        self.main_window.sim_sc_table.setRowCount(len(sub1.alimentadores.values()[0].trechos))
+        self.main_window.sim_sc_table.setRowCount(len(trechos))
         # Adiciona os cabeçalhos horizontal e vertical a partir dos dados obtidos
-        self.main_window.sim_sc_table.setHorizontalHeaderLabels(data1[0])
-        data1.pop(0)
-        for row in data1:
-            for col in range(self.main_window.sim_sc_table.columnCount()):
-                self.main_window.sim_sc_table.setItem(data1.index(row),col, QtGui.QTableWidgetItem(row[col]))
+        self.main_window.sim_sc_table.setHorizontalHeaderLabels(['Nome','comprimento (m)','corrente (A)'])
+        for row in trechos:
+            for col in range(3):
+                self.main_window.sim_sc_table.setItem(trechos.index(row),col, QtWidgets.QTableWidgetItem(row[col]))
+                
 
-
-        # Cria uma tabela para apresentar os dados de fluxo de carga e a adiciona como uma tab da tab
-        # simulação.
-        self.main_window.sim_pf_table = QtGui.QTableWidget()
-        self.main_window.sim_pf_grid_layout = QtGui.QGridLayout()
-        self.main_window.sim_pf_grid_layout.addWidget(self.main_window.sim_pf_table,0,0)
-        self.main_window.sim_view.addTab(self.main_window.sim_pf_table,QtGui.QApplication.translate(
-                    "main_window", "Fluxo de Carga", None))
-        # Adiciona uma tabela à aba de simulação
-        # for sub in top["subestacoes"].values():
-
-        #     self.main_window.sim_table.setRowCount()
-        #     self.main_window.sim_table.setColumnCount(len(top["trechos"]))
-        #     self.main_window.sim_table.adjustSize()
-
-class ViewWidget(QtGui.QGraphicsView):
+        for i in Node.allNodes:
+            if i.myItemType == 4:
+                for j in nos:
+                    if i.no_de_carga.nome.lower()==j[0].lower():
+                        i.text.setPlainText(i.no_de_carga.nome+'\n'+str(round(float(j[1])/1000,3)))
+        pass
+        
+class ViewWidget(QtWidgets.QGraphicsView):
     '''
         Esta classe implementa o container QGraphicsView onde residirá o objeto QGraphicsScene.
     '''
     def __init__(self, scene):
         super(ViewWidget, self).__init__(scene)
-        self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
+        self.setCacheMode(QtWidgets.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorViewCenter)
 
     def wheelEvent(self, event):
         '''
@@ -2407,7 +2481,7 @@ class ViewWidget(QtGui.QGraphicsView):
         self.scale(scale_factor, scale_factor)
 
 
-class AddRemoveCommand(QtGui.QUndoCommand):
+class AddRemoveCommand(QtWidgets.QUndoCommand):
     '''
         Classe que implementa os comandos "desfazer"(undo) e "refazer"(undo).
     '''
@@ -2455,7 +2529,7 @@ class AddRemoveCommand(QtGui.QUndoCommand):
                 self.scene.removeItem(self.item.Noc)
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     scene = SceneWidget()
     widget = ViewWidget(scene)
     widget.show()
